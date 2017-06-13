@@ -123,14 +123,20 @@ __A3  (Expert application programmer)__
 
 ## [fit]Scala is object-oriented
 
-Scala is an object-oriented language in pure form - every value is an object and every operation is a method call. 
+Scala is an object-oriented language in pure form 
+
+- every value is an object and 
+- every operation is a method call
 
 ```scala
-1 + 2 //invoking a method named + defined in class Int
+//invoking a method named + defined in class Int
+1 + 2
 ```   
 
+---
+## [fit]Scala is object-oriented
 
-Scala is more advanced than most other languages when it comes to composing objects. Objects are constructed by mixin composition, which takes the members of a class and adds the members of a number of traits to them.
+Objects are constructed by mixin composition, which takes the members of a class and adds the members of a number of traits to them
 
 ```scala
  class Iter extends StringIterator(args(0)) with RichIterator
@@ -143,7 +149,17 @@ Scala is more advanced than most other languages when it comes to composing obje
 ---
 ## [fit]Scala is functional
 
-Scala treats functions are first-class values. It allows us to  pass functions as arguments to other functions, return them as results from functions, or store them in variables. We could also define a function inside another function  and also define functions without giving them a name
+Scala treats functions are first-class values. It allows us to  
+
+- pass functions as arguments to other functions
+- return them as results from functions
+- store them in variables
+- define a function inside another function
+- define functions without giving them a name
+
+---
+
+## [fit]Scala is functional
 
 ```scala
 	val xs = 1 to 3
@@ -186,4 +202,285 @@ sdk i sbt
 scalac -version
 ```
 
+Binary Compatibility of Scala Releases [^binary-compatibility]
+
+
+[^binary-compatibility]: http://docs.scala-lang.org/overviews/core/binary-compatibility-of-scala-releases.html , http://www.scala-lang.org/old/node/9346
+
+---
+
+## [fit]First Steps
+
+```scala
+scala> 1 + 2
+res0: Int = 3
+
+scala> println("hola")
+hola
+
+```
+
+*res0* - an identifier (automatically generated in this case)
+*Int* -  scala.Int the type (class Int in the package scala)
+*3* - the value resulting from evaluating the expression 
+
+
+ - Every expression in Scala has a type and a value. 
+ - Type is determined at compile time and the 
+ - Value is determined by executing the expression
+
+
+
+^ All of Java’s primitive types have corresponding classes in the scala package
+^ Scala compiler would use Java primitive types where possible
+
+---
+
+## Pop Quiz
+
+
+Reason for keeping primitives in Java  [^whyprim] 
+
+
+
+[^whyprim]: http://www.javaworld.com/article/2150208/java-language/a-case-for-keeping-primitives-in-java.html
+
+[^whynotprim]: http://wiki.c2.com/?JavaPrimitiveTypesDiscussion
+
+---
+
+##Vals & Vars
+
+```scala 
+//vals can never be reassigned once initialized
+//similar to a final variable in Java 
+scala> val msg = "hello"
+msg: String = hello
+
+//vars can be reassigned throughout its lifetime
+scala> var i = 10
+i: Int = 10
+
+```
+
+- vals are preferred over vars
+- immutability increases stability and predictability (esp concurrent or multithreaded code)
+- makes debugging and reading easier
+
+
+^ data stored in vals and vars get automatically deallocated by JVM during GC
+
+---
+
+## Type Inference
+
+
+```scala 
+scala> val msgGreet: String = "hello again"
+
+```
+
+>Often better to let the interpreter/compiler infer types than fill the code with explicit type annotations
+
+```scala 
+//Scala inferred the type of msg to be String
+scala> val msg = "hello"
+msg: String = hello
+
+```
+
+---
+
+# Functions
+```scala 
+// What is the smallest positive integer whose square ends in the digits 269,696 ?
+// Charles Babbage thought it'd be 99,736 - was he right?
+
+def babbage(start: Int): Boolean = {
+  var x = if (start % 2 == 1) start - 1 else start
+  while ((x * x) % 1000000 != 269696) {
+      x = x + 2
+  }
+  println(x)
+  x == 99736
+}
+```
+
+---
+
+# Exercise 
+
+Rewrite babel check without vars
+
+---
+# Exercise - Solution
+```scala 
+
+def babbageR(start: Int): Boolean = {
+  def tailCheck(x: Int): Int = {
+    if ((x * x) % 1000000 == 269696) {
+      x
+    } else {
+      tailCheck(x + 2)
+    }
+  }
+
+  val result = if (start % 2 == 1) {
+    tailCheck(start - 1)
+  } else {
+    tailCheck(start)
+  }
+
+  println(result)
+  result == 99736
+}
+
+```
+Restriction on forward references in blocks [^fwdblock]
+
+[^fwdblock]: http://www.scala-lang.org/files/archive/spec/2.11/04-basic-declarations-and-definitions.html
+
+---
+# Functions
+
+
+```scala 
+
+def greet() = {
+  println("hola")
+}
+
+// Methods which return Unit could use the non-equals syntax. 
+// As of Scala-2.10, using equals sign is preferred
+def greeter() {
+  println("hola")
+}
+
+```
+
+---
+
+# Functions
+
+- Scala compiler does not infer function parameter types
+- If the function is recursive, you must explicitly specify the function’s result type
+
+---
+
+# Types
+
+In Scala, 
+
+- all values have a type, including numerical values and functions
+- all values are objects (instances of a class)
+
+---
+
+# class hierarchy
+
+![inline,95%](img/types.png)
+
+---
+
+# Types
+
+- Any is the supertype of all types (defines  universal methods such as equals, hashCode, and toString)
+- AnyVal represents value types Double, Float, Long, Int, Short, Byte, Char, Unit, and Boolean  (non-nullable)
+- AnyRef represents reference types.  Every user-defined type in Scala is a subtype of AnyRef (corresponds to java.lang.Object)
+
+---
+# Types
+
+```scala
+
+val list: List[Any] = List(
+  "a string",
+  732,  // an integer
+  'c',  // a character
+  true, // a boolean value
+  () => "an anonymous function returning a string"
+)
+list.foreach(element => println(element))
+
+```
+
+---
+
+# Nothing and Null
+
+
+**Nothing** is a Trait and a subtype of everything. But not superclass of anything. There are no instances of Nothing. It is used to signal non-termination such as a thrown exception, program exit, or an infinite loop etc.
+
+**Null** is a Trait and a subtype of all reference types. There exists exactly one instance of Null, and that is _null_ .
+It is provided mostly for interoperability with other JVM languages and should almost never be used in Scala code.
+
+---
+
+# Option/Some/None
+Option has exactly 2 subclasses- Some and None. None signifies no result from the method.
+
+>idiomatic way of initializing, setting, and accessing a variable
+
+```scala
+
+// 1) initialize with Option and None
+var firstName = None: Option[String]
+
+// 2) set the value with Some
+firstName = Some("Al")
+
+// 3) access the value, typically with getOrElse
+println(firstName)
+println(firstName.getOrElse("No name given"))
+```
+
+----
+
+# Option/Some/None
+
+```scala
+//Exercise
+def toInt(in: String): ???= {
+    try {
+        ???
+    } catch {
+        ???
+    }
+}
+
+```
+
+
+---
+
+# Strings
+
+
+> Built on Java’s String and adds  features like multiline literals and string interpolation
+
+- == checks for true equality, not object reference equality
+- multiline String can be created using triple-quotes """
+
+```scala
+val str = "mundo"
+println(s" hola $str")
+```
+
+---
+
+
+---
+---
+---
+---
+---
+---
+---
+---
+---
+---
+---
+---
+---
+---
 ---
