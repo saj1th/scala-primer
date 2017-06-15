@@ -291,6 +291,405 @@ msg: String = hello
 
 ---
 
+# Types
+
+In Scala, 
+
+- all values have a type, including numerical values and functions
+- all values are objects (instances of a class)
+
+---
+
+# class hierarchy
+
+![inline,95%](img/types.png)
+
+---
+
+# Types
+
+- Any is the supertype of all types (defines  universal methods such as equals, hashCode, and toString)
+- AnyVal represents value types Double, Float, Long, Int, Short, Byte, Char, Unit, and Boolean  (non-nullable)
+- AnyRef represents reference types.  
+- Every user-defined type in Scala is a subtype of AnyRef (corresponds to java.lang.Object in JRE)
+
+
+---
+# Types
+
+```scala
+
+val list: List[Any] = List(
+  "a string",
+  732,  // an integer
+  'c',  // a character
+  true, // a boolean value
+  () => "an anonymous function returning a string"
+)
+list.foreach(element => println(element))
+
+```
+
+---
+
+# Nothing and Null
+
+
+**Nothing** 
+
+- is a Trait and a subtype of everything. 
+- there are no instances of Nothing. 
+- used to signal non-termination such as a thrown exception, program exit, or an infinite loop etc
+
+**Null** 
+
+- is a Trait and a subtype of all reference types. 
+- there exists exactly one instance of Null, and that is _null_ .
+- provided mostly for interoperability with other JVM languages and should almost never be used in Scala code
+- often abused to represent an absent optional value; scala provides better altrenatives
+
+---
+
+# Option/Some/None
+
+- Option[A] is a container for an optional value of type A
+- If the value of type A is present, the Option[A] is an instance of Some[A]
+- If the value is absent, the Option[A] is the object None
+
+>idiomatic way of initializing, setting, and accessing a variable
+
+```scala
+
+// 1) initialize with Option and None
+var firstName = None: Option[String]
+
+// 2) set the value with Some
+firstName = Some("Al")
+
+// 3) access the value, typically with getOrElse
+println(firstName)
+println(firstName.getOrElse("No name given"))
+```
+
+----
+# Strings
+
+
+> Built on Java’s String and adds  features like multiline literals and string interpolation
+
+- == checks for true equality, not object reference equality
+- multiline String can be created using triple-quotes """
+- dollar sign operators ($) (with optional braces) can be used to note references to external data
+
+```scala
+val str = "mundo"
+println(s" hola $str")
+```
+
+---
+# Tuples
+
+A tuple is an ordered container of two or more values, all of which may have different types.
+
+- useful when you need to logically group values, representing them as a coherent unit
+- unlike lists and arrays, however, there is no way to iterate through elements in a tuple
+
+```scala
+
+scala> val info = (10, "hello", true)
+info: (Int, String, Boolean) = (10,hello,true)
+
+scala> println(info._2)
+hello
+
+```
+
+---
+
+# Built-in Control Structures
+
+Scala's control structures include
+
+_if, while, for, try, match, and function calls_
+
+ Almost all of Scala’s control structures result in some value - an approach taken by functional languages
+
+---
+
+# If-Else Expressions
+
+> if (<Boolean expression>) <expression>
+    else <expression>
+
+
+
+```scala
+val x = 10; val y = 20
+val max = if (x > y) x else y
+
+
+//What would be the type of result
+val result = if ( false ) "what does this return?"
+
+```
+
+---
+
+# Match Expressions
+
+Match expressions are similar to "switch" statements, where a single input item is evaluated and the first pattern that is "matched" is executed and its value returned
+
+Scala’s match expressions can match diverse items as types, regular expressions, numeric ranges, and data structure contents
+
+
+```scala
+
+val x = 10; val y = 20
+
+val max = x > y match {
+  case true => x
+  case false => y
+}
+```
+
+---
+# Match Expressions
+
+```scala
+val status = 500
+
+val message = status match {
+  case 200 =>
+    "ok"
+  case 400 | 401 => {
+    println("ERROR - we called the service incorrectly")
+    "error"
+  }
+  case 500 => {
+    println("ERROR - the service encountered an error")
+    "error"
+  }
+}
+
+```
+
+---
+
+**Matching with value/variable binding**
+
+```scala
+val stat = message match {
+  case "ok" => 200
+  case other => {
+    println(s"Couldn't parse $other")
+    -1
+  }
+}
+
+```
+
+**Matching with wildcard operator**
+
+```scala
+val stat = message match {
+  case "ok" => 200
+  case _ => {
+    println(s"Couldn't parse $message")
+    -1
+  }
+}
+
+
+```
+
+---
+
+**Matching with pattern guards**
+
+```scala
+
+val response: String = null
+
+response match {
+  case s if s != null => println(s"Received '$s'")
+  case s => println("Error! Received a null response")
+}
+
+```
+
+**Matching with type**
+
+```scala
+
+val x: Int = 12180
+val y: Any = x
+
+val z = y match {
+  case x: String => s"'x'"
+  case x: Double => f"$x%.2f"
+  case x: Float => f"$x%.2f"
+  case x: Long => s"${x}l"
+  case x: Int => s"${x}i"
+}
+
+
+```
+
+
+---
+
+# while and do/while loops
+
+> while (<Boolean expression>) statement
+
+
+```scala
+
+var x = 0
+do {
+  println(s"Here I am, x = $x")
+  x += 1
+}
+while (x < 5)
+
+```
+
+Scala has more expressive and more functional ways to handle loops than while and do/while loops
+
+---
+
+
+# for  comprehension
+
+> for (<identifier> <- <iterator>) [yield] [<expression>]
+
+If yield keyword is specified, the return value of every expression that gets invoked will be returned as a collection
+
+```scala
+
+val list = for (x <- 1 to 7) yield { s"day $x" }
+
+for (day <- list) { print(s"$day, ")}
+
+```
+
+---
+
+# for  comprehension
+
+Iterator Guards
+
+>  for (<identifier> <- <iterator> if <Boolean expression>) ...
+
+```scala
+
+val quote = "Faith,Hope,,Charity"
+for {
+  t <- quote.split(",")
+  if t != null
+  if t.nonEmpty
+} {
+  println(t)
+}
+
+
+```
+
+---
+# for  comprehension
+
+Value Binding
+
+```scala
+
+ val powersOf2 = for (i <- 0 to 8; pow = 1 << i) yield pow
+
+ ```
+
+---
+# Functions
+
+Fnctions are named, reusable expressions in Scala
+
+In functional programming a __pure function__ is one that
+
+- Has one or more input parameters
+- Performs calculations using only the input parameters
+- Returns a value
+- Always returns the same value for the same input
+- Does not use or affect any data outside the function
+- Is not affected by any data outside the function
+
+They are stateless and orthogonal to external data such as files, databases, sockets, global variables, or other shared data
+
+---
+# Functions
+It is hard to write useful applications with pure functions alone
+
+- seek ways to reduce the number of unpure functions.
+- keep unpure functions clearly named and organized in such a way that they can be easily identified
+
+__Syntax: Defining a Function__
+
+```scala
+
+def <identifier>(<identifier>: <type>[, ... ]): <type> = <expression>
+
+```
+
+---
+
+# Functions
+
+A Scala function in it's basic form is a named wrapper for an expression
+
+```scala 
+
+def greet =  println("hola")
+
+def greet() = {
+  println("hola")
+}
+
+```
+
+A convention in the Scala community is to omit parentheses for no-argument methods that have no side effects, like the size of a collection
+
+
+---
+
+# Functions
+
+
+```scala 
+
+// Methods which return Unit could use the non-equals syntax. 
+// As of Scala-2.10, using equals sign is preferred
+def greeter() {
+  println("hola")
+}
+
+```
+
+---
+
+# Option/Some/None
+
+```scala
+//Exercise
+def toInt(in: String): ??? = {
+    try {
+        ???
+    } catch {
+        ???
+    }
+}
+
+```
+
+---
+
+
 # Functions
 ```scala 
 // What is the smallest positive integer whose square ends in the digits 269,696 ?
@@ -306,8 +705,8 @@ def babbage(start: Int): Boolean = {
 }
 ```
 
----
 
+---
 # Exercise 
 
 Rewrite babel check without vars
@@ -341,146 +740,334 @@ Restriction on forward references in blocks [^fwdblock]
 [^fwdblock]: http://www.scala-lang.org/files/archive/spec/2.11/04-basic-declarations-and-definitions.html
 
 ---
-# Functions
 
-
-```scala 
-
-def greet() = {
-  println("hola")
-}
-
-// Methods which return Unit could use the non-equals syntax. 
-// As of Scala-2.10, using equals sign is preferred
-def greeter() {
-  println("hola")
-}
-
-```
-
----
 
 # Functions
 
 - Scala compiler does not infer function parameter types
 - If the function is recursive, you must explicitly specify the function’s result type
 
----
 
-# Types
-
-In Scala, 
-
-- all values have a type, including numerical values and functions
-- all values are objects (instances of a class)
 
 ---
+# Tail Recursion
 
-# class hierarchy
+Invoking a recursive function too many times eventually uses up all of the allocated stack space and may result in "Stack Overflow" error
 
-![inline,95%](img/types.png)
-
----
-
-# Types
-
-- Any is the supertype of all types (defines  universal methods such as equals, hashCode, and toString)
-- AnyVal represents value types Double, Float, Long, Int, Short, Byte, Char, Unit, and Boolean  (non-nullable)
-- AnyRef represents reference types.  Every user-defined type in Scala is a subtype of AnyRef (corresponds to java.lang.Object)
-
----
-# Types
+Functions whose last statement is the recursive invocation itself can be optimized for tail-recursion by the Scala compiler
 
 ```scala
 
-val list: List[Any] = List(
-  "a string",
-  732,  // an integer
-  'c',  // a character
-  true, // a boolean value
-  () => "an anonymous function returning a string"
-)
-list.foreach(element => println(element))
+// rewrite to support tailrec
+@annotation.tailrec
+def power(x: Int, n: Int): Long = {
+  if (n >= 1) x * power(x, n-1)
+    else 1
+}
 
 ```
 
 ---
 
-# Nothing and Null
+# Functions
 
+Scala supports
 
-**Nothing** is a Trait and a subtype of everything. But not superclass of anything. There are no instances of Nothing. It is used to signal non-termination such as a thrown exception, program exit, or an infinite loop etc.
-
-**Null** is a Trait and a subtype of all reference types. There exists exactly one instance of Null, and that is _null_ .
-It is provided mostly for interoperability with other JVM languages and should almost never be used in Scala code.
+- Nested Functions
+- Calling Functions with Named Parameters
+- Parameters with Default Values
 
 ---
-
-# Option/Some/None
-Option has exactly 2 subclasses- Some and None. None signifies no result from the method.
-
->idiomatic way of initializing, setting, and accessing a variable
+# Functions 
+Vararg Parameters
 
 ```scala
-
-// 1) initialize with Option and None
-var firstName = None: Option[String]
-
-// 2) set the value with Some
-firstName = Some("Al")
-
-// 3) access the value, typically with getOrElse
-println(firstName)
-println(firstName.getOrElse("No name given"))
-```
-
-----
-
-# Option/Some/None
-
-```scala
-//Exercise
-def toInt(in: String): ???= {
-    try {
-        ???
-    } catch {
-        ???
-    }
+def sum(items: Int*): Int = {
+  ???
 }
 
 ```
 
 
+
 ---
 
-# Strings
+# Functions 
 
-
-> Built on Java’s String and adds  features like multiline literals and string interpolation
-
-- == checks for true equality, not object reference equality
-- multiline String can be created using triple-quotes """
+Parameter Groups 
 
 ```scala
-val str = "mundo"
-println(s" hola $str")
+
+def max(x: Int)(y: Int) = if (x > y) x else y
+val larger = max(20)(39)
+
+```
+> more about parameter groups in currying
+
+
+---
+
+### Parameterized (Polymorphic) Functions 
+
+
+```scala
+    def <function-name>[type-name](parameter-name>: <type-name>): <type-name>...
+```
+
+Instead of defining functions to be used with individual types - we could  parameterize the type
+
+```scala
+def toss[A](a: A, b: A): A = {
+  if (scala.util.Random.nextInt > 0) a else b
+}
+
+toss[Int] (1, 0)
+toss[String] ("head", "tail")
+
+//since scala provides type inference we can call
+toss(1, 0)
+toss("head", "tail")
+
+
 ```
 
 ---
 
+# Functions
+
+Scala supports only rank-1 polymorphism
+
+```scala
+
+def singletonList[A](a: A): List[A] = List(a)
+
+
+// This does not compile, because all type variables have to be fixed at the invocation site. 
+def apply[A,B](f: A => List[A], b: B, s: String): (List[B], List[String]) = (f(b), f(s))
+
+// won't compile
+def apply[A,B](f: A => List[A], b: B): (List[B]) = (f(b))
+
+// won't compile
+def apply[A](f: A => List[A], b: Int): (List[Int]) = (f(b))
+
+
+```
 
 ---
+# Function Types
+
+Type of a function is a  grouping of its input types and return value type
+
+```scala
+ 
+ //has type (Int) => Int
+ def double(x: Int): Int = x * 2
+
+//explicit type required to distinguish it as a function value and not a function invocation
+val myDouble: (Int) => Int = double
+
+//Function types with a single parameter can leave off the parentheses
+val myDouble: Int => Int = double
+
+// wildcard operator _ serves as a placeholder for a future invocation
+val myDouble = double _
+
+```
+
+
 ---
+# Higher order functions
+
+Scala supports functions that accept other functions as parameters and/or use functions as return values
+
+```scala
+
+def safeStringOp(s: String, f: String => String) = {
+  if (s != null) Some(f(s)) else None
+}
+def reverser(s: String) = s.reverse
+
+println(safeStringOp("-", reverser).getOrElse("-"))
+
+```
+
 ---
+# Lambdas / Anonymous functions
+ 
+is a function literal which lacks a name
+
+```scala
+
+val doubler = (x: Int) => x * 2
+
+```
+
 ---
+
+# Lambdas / Anonymous functions
+
+```scala
+
+def replicate[T] : ( Int, T, List[T] ) => List[T] = {
+  ( n :Int, t :T, list :List[T] ) => {
+    if( n <= 0 ) list else t :: replicate( n-1, t, list )
+  }
+}
+
+// Nil Represents an emptry List 
+val repeatedStrs : List[String] =  ???
+val repeatedNums : List[Int] = ???
+
+```
+
 ---
+
+# Placeholder Syntax
+
+shortened form of lambdas - replacing named parameters with wildcard operators (_)
+
+```scala
+scala> val doubler: Int => Int = _ * 2
+doubler: Int => Int = <function1>
+
+```
+
+
+- the explicit type of the function is specified outside the literal  
+- the parameters are used no more than once
+- we can use two or more underscores to refer different parameters
+
 ---
+
+# Placeholder Syntax
+
+```scala
+
+def safeStringOp(s: String, f: String => String) = {
+  if (s != null) Some(f(s)) else None
+}
+
+// operationally the same as s => s.reverse, but simplified with placeholder syntax
+safeStringOp("ab", _.reverse)
+safeStringOp(null, _.reverse)
+
+// multiple params
+
+def combination(x: Int, y: Int, f: (Int,Int) => Int) = f(x,y)
+
+combination(23, 12, _ * _)
+combination(23, 12, _ + _)
+
+```
 ---
+
+# Partially Applied Functions 
+
+Partially Applied Functions and Currying gives a way to reuse a function invocation and retain some of the parameters
+
+
+```scala
+
+ def factorOf(x: Int, y: Int) = y % x == 0
+ 
+ //shortcurt
+ val f = factorOf _
+
+//partially apply the function by using
+//wildcard operator to take the place of one of the parameters
+val isEven = factorOf(2, _: Int)
+
+val y = isEven(78)
+ ```
+
+
 ---
+
+# Currying
+
+Currying is a cleaner way to partially apply functions
+
+Instead of breaking up a parameter list into applied and unapplied parameters, define functions with multiple parameter lists
+
+```scala
+
+def factorOf(x: Int)(y: Int) = y % x == 0
+
+val isEven = factorOf(2) _
+
+isEven(32)
+```
+
+
+A function with multiple parameter lists is considered to be a chain of multiple functions. Each separate parameter list is considered to be a separate function call.
+
 ---
+
+# Closures
+
+In scala, we could refer to variables defined  outside of the scope of the function
+
+```scala
+val addMore = (x: Int) => x + more
+
+// x is a bound variable because it has a meaning in the context of the function
+// more is a free variable because the function literal does not itself give a meaning to it
+
+var more = 1
+val addMore = (x: Int) => x + more
+addMore(10)
+
+```
+ The term "closure" arises from the act of "closing" the function literal by "capturing" the bindings of its free variables.
+
 ---
+
+# Functions
+
+
+```scala
+
+def factorOf(x: Int, y: Int) = y % x == 0
+val isEven = factorOf(2, _: Int)
+isEven(42)
+
+def factorOf(x: Int)(y: Int) = y % x == 0
+val isEven1 = factorOf(2) _
+isEven1(42)
+
+def factorOf(x: Int) = (y:Int) => y % x == 0
+val isEven = factorOf(2)
+isEven(42)
+
+```
+
 ---
+
+# Parameters by Name
+
+a by-name parameter can take either 
+
+- a value or 
+- a function that eventually returns the value
+
+```scala
+
+def doubles(x: => Int) = {
+  println("Now doubling " + x)
+  x * 2
+}
+def f(i: Int) = { println(s"Hello from f($i)"); i }
+doubles(5)
+doubles( f(8) )
+
+```
+
 ---
+
+# Partial Functions
+
 ---
----
----
+# Functions vs Methods
+
+Exercise
