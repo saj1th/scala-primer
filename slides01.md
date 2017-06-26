@@ -12,10 +12,9 @@ autoscale: true
 - Getting Started
 - Literals, Values, Variables, and Types
 - Expressions / Control Structures
-- First-Class Functions
-- Object-Oriented Scala
+- First Class Functions
 - Collections
-- Case Classes and Pattern Matching
+- Object-Oriented Scala
 
 ---
 
@@ -27,7 +26,7 @@ autoscale: true
 Martin Odersky and team at EPFL created Scala in 2004 to provide a high-performance, concurrent-ready, statically typed JVM language which supports both functional and object-oriented programming
 
 -
-> When Matei Zaharia set out to create Spark, he wanted a programming language that provided LINQ style interface  (where people write functions inline, etc). He also wanted it to be on the JVM in order to easily interact with the Hadoop filesystem and related data formats. The presence of this kind of functional syntax along with static typing, type inference, pattern matching, actor libraries etc resulted in Scala being the choice
+> When Matei Zaharia set out to create Spark, he wanted a programming language that provided LINQ style interface  (where people write functions inline, etc). He also wanted it to be on the JVM in order to easily interact with the Hadoop file system and related data formats. The presence of this kind of functional syntax along with static typing, type inference, pattern matching, actor libraries etc resulted in Scala being the choice
 
 ^ Eric Raymond 
 
@@ -117,6 +116,21 @@ __A3  (Expert application programmer)__
 
 ---
 
+#Scala's Road Ahead 
+
+
+Dotty - http://dotty.epfl.ch/
+
+- New Scala compiler
+- Aiming to simplify Scala’s types and syntax, based on DOT (https://infoscience.epfl.ch/record/215280)
+- Half the size of current compiler
+- Twice faster
+- Drops / adds features
+
+
+
+---
+
 # Getting Started
 
 ---
@@ -202,7 +216,15 @@ sdk i sbt
 scalac -version
 ```
 
-Binary Compatibility of Scala Releases [^binary-compatibility]
+---
+
+# [fit]Setting up the Environment 
+
+> Configure 
+http://scalameta.org/scalafmt/ 
+http://www.scalastyle.org/
+
+The lack of  binary compatibility in Scala [^binary-compatibility]
 
 
 [^binary-compatibility]: http://docs.scala-lang.org/overviews/core/binary-compatibility-of-scala-releases.html , http://www.scala-lang.org/old/node/9346
@@ -232,7 +254,7 @@ hola
 
 
 ^ All of Java’s primitive types have corresponding classes in the scala package
-^ Scala compiler would use Java primitive types where possible
+Scala compiler would use Java primitive types where possible
 
 ---
 
@@ -310,7 +332,7 @@ In Scala,
 
 - Any is the supertype of all types (defines  universal methods such as equals, hashCode, and toString)
 - AnyVal represents value types Double, Float, Long, Int, Short, Byte, Char, Unit, and Boolean  (non-nullable)
-- AnyRef represents reference types.  
+- AnyRef represents reference types
 - Every user-defined type in Scala is a subtype of AnyRef (corresponds to java.lang.Object in JRE)
 
 
@@ -346,7 +368,7 @@ list.foreach(element => println(element))
 - is a Trait and a subtype of all reference types. 
 - there exists exactly one instance of Null, and that is _null_ .
 - provided mostly for interoperability with other JVM languages and should almost never be used in Scala code
-- often abused to represent an absent optional value; scala provides better altrenatives
+- often abused to represent an absent optional value; scala provides better alternatives
 
 ---
 
@@ -488,7 +510,7 @@ val stat = message match {
 
 ```
 
-**Matching with wildcard operator**
+**Matching with wild-card operator**
 
 ```scala
 val stat = message match {
@@ -609,7 +631,7 @@ Value Binding
 ---
 # Functions
 
-Fnctions are named, reusable expressions in Scala
+Functions are named, reusable expressions in Scala
 
 In functional programming a __pure function__ is one that
 
@@ -626,8 +648,8 @@ They are stateless and orthogonal to external data such as files, databases, soc
 # Functions
 It is hard to write useful applications with pure functions alone
 
-- seek ways to reduce the number of unpure functions.
-- keep unpure functions clearly named and organized in such a way that they can be easily identified
+- seek ways to reduce the number of impure functions.
+- keep impure functions clearly named and organized in such a way that they can be easily identified
 
 __Syntax: Defining a Function__
 
@@ -845,6 +867,8 @@ def singletonList[A](a: A): List[A] = List(a)
 // This does not compile, because all type variables have to be fixed at the invocation site. 
 def apply[A,B](f: A => List[A], b: B, s: String): (List[B], List[String]) = (f(b), f(s))
 
+apply( singletonList, 10, "test")
+
 // won't compile
 def apply[A,B](f: A => List[A], b: B): (List[B]) = (f(b))
 
@@ -890,6 +914,10 @@ def reverser(s: String) = s.reverse
 
 println(safeStringOp("-", reverser).getOrElse("-"))
 
+println(safeStringOp("abc", (s: String) => s.reverse).getOrElse("-"))
+
+println(safeStringOp("abc",  _.reverse).getOrElse("-"))
+
 ```
 
 ---
@@ -915,7 +943,7 @@ def replicate[T] : ( Int, T, List[T] ) => List[T] = {
   }
 }
 
-// Nil Represents an emptry List 
+// Nil Represents an empty List 
 val repeatedStrs : List[String] =  ???
 val repeatedNums : List[Int] = ???
 
@@ -971,7 +999,7 @@ Partially Applied Functions and Currying gives a way to reuse a function invocat
 
  def factorOf(x: Int, y: Int) = y % x == 0
  
- //shortcurt
+ //shortcut
  val f = factorOf _
 
 //partially apply the function by using
@@ -1067,7 +1095,828 @@ doubles( f(8) )
 
 # Partial Functions
 
+Scala’s partial functions are function literals that apply a series of case patterns to their input, requiring that the input match at least one of the given patterns. Invoking one of these partial functions with data that does not meet at least one case pattern results in a Scala error.
+
+```scala
+
+val statusHandler: Int => String = {
+  case 200 => "Okay"
+  case 400 => "Your Error"
+  case 500 => "Our error"
+}
+
+statusHandler(400)
+statusHandler(401)
+
+```
+// partial functions are useful when working with collections and pattern matching
+
+
+
 ---
 # Functions vs Methods
 
-Exercise
+http://jim-mcbeath.blogspot.in/2009/05/scala-functions-vs-methods.html
+
+---
+# Exercises
+
+1) Write a function literal that takes two integers and returns the higher number
+
+```scala
+val max = ???
+```
+
+---
+
+# Exercises
+
+```scala
+//solution
+val max = (x: Int, y: Int) => if (x > y) x else y
+
+max(23, 32)
+
+```
+
+---
+
+# Exercises
+ 
+
+2) Write a higher-order function that takes a 3-sized tuple of integers plus this function literal, and uses it to return the maximum value in the tuple.
+
+```scala
+def pickOne(???, ???): ??? = {
+  ???
+}
+```
+
+---
+
+```scala
+
+//solution
+
+def pickOne(t: (Int, Int, Int), cmp: (Int, Int) => Int): Int = {
+  cmp(t._1, cmp(t._2, t._3))
+}
+
+pickOne( (14, 7, 9), max )
+
+```
+
+---
+
+# Exercises
+
+3) Write a function called "conditional" that takes a value x and two functions, p and f, and returns a value of the same type as x
+
+The p function is a predicate, taking the value x and returning a Boolean b.
+
+The f function also takes the value x and returns a new value of the same type.
+
+Your "conditional" function should only invoke the function f(x) if p(x) is true, and otherwise return x
+
+```scala
+
+def conditional[A](???, ???, ???): ??? = ???
+
+```
+
+---
+
+```scala
+
+//solution
+
+def conditional[A](x: A, p: A => Boolean, f: A => A): A = {
+  if (p(x)) f(x) else x
+}
+
+val a = conditional("yoioo", (s:String) => s.length > 4, (s:String) => s.reverse)
+
+val b = conditional[String]("yo", _.size > 4, _.reverse)
+
+```
+
+---
+# Exercise 
+
+4) Print the numbers 1 - 100 one per line.  Multiples of 3 must replace the number with the word "type", while multiples of 5 must replace the number with the word "safe" and multiples of 15 must print "typesafe".
+
+```scala
+
+for (i <- 1 to 100) {
+  ???
+}
+
+```
+
+---
+
+```scala
+//solution 
+
+
+def conditional[A](x: A, p: A => Boolean, f: A => String): String = {
+  if (p(x)) f(x) else ""
+}
+
+for (i <- 1 to 100) {
+    val a1 = conditional[Int](i, _ % 3 == 0, _ => "type")
+    val a2 = conditional[Int](i, _ % 5 == 0, _ => "safe")
+    val a3 = conditional[Int](i, _ % 3 > 0 && i % 5 > 0, x => s"$x")
+    println(a1 + a2 + a3)
+}
+
+```
+
+---
+
+# Method vs function
+
+In Scala functions are values, while methods are not
+
+```scala
+
+//not a value - gives a value when we call it with arguments
+def m1(x: Int) = x + x
+
+// instance of  Function1[Int, Int]
+val f1 = (x: Int) => x + x
+
+// calling m1  will result in error
+
+```
+
+---
+
+# Lifting a method
+Methods can be converted into functions by calling method with underscore "_" after method name
+
+```scala
+// η-expansion ( eta )
+// construct a Function1 instance that delegates to our method
+val f2 = m1 _  // Int => Int = <function1>
+```
+
+Scala allows us to provide a method in the place where a function is expected (as arguments to other functions etc). η-expansion, in this case would happen automatically
+
+---
+
+# Pop Quiz
+
+What is the type of sum ?
+
+```scala 
+def sum(f: Int => Int)(a: Int, b: Int): Int = ... 
+```
+
+---
+
+# Pop Quiz
+
+What is the type of sum ?
+
+```scala
+(Int => Int) => (Int, Int) => Int
+
+
+
+(Int => Int) => ((Int, Int) => Int) = <function1>
+
+```
+
+---
+# Functions
+
+
+__Pure anonymous functions with placeholder syntax - use parenthesis__
+
+```scala
+val cubes = _localCubes.values flatMap (_.values)
+```
+__Anonymous functions with placeholder syntax having side effects - use braces__
+
+```scala
+
+  nodes.valuesIterator foreach { _.delete() }
+
+```
+
+__For longer anonymous functions - use braces & code blocks__
+
+```scala
+  val remotePartitions = latest.partitions map { p =>
+      val partition = Json.parse(p.partition)
+      ...
+  }
+```
+
+---
+
+# Collections
+
+
+---
+
+# Collections
+
+Scala has a high-performance, object-oriented, and type-parameterized collections framework just as Java does. 
+
+However, Scala’s collections also have higher-order operations like map, filter, and reduce that make it possible to manage and manipulate data with short and expressive expressions. 
+
+---
+
+# Collections
+
+
+Scala collections systematically distinguish between mutable and immutable collections.
+
+A collection in package scala.collection.immutable is guaranteed to be immutable for everyone.
+Similarly, a collection in package scala.collection.mutable is known to have some operations that change the collection in place. 
+
+
+---
+# Functional Data Structures
+---
+# Collections
+
+For convenience and backwards compatibility some important types have aliases in the scala package.
+
+```scala
+scala.collection.immutable.List   // that's where it is defined
+scala.List                        // via the alias in the scala package
+List                              // because scala._
+                                  // is always automatically imported
+```
+By default, Scala always picks immutable collections. 
+e.g. if you just write Set without any prefix or without having imported Set from somewhere, you get an immutable set, because these are the default bindings imported from the scala package. 
+
+To get the mutable default versions, you need to write explicitly collection.mutable.Set
+
+The root of all iterable collections, Iterable, provides a common set of methods for iterating through and manipulating collection data
+
+---
+
+
+
+![inline, 100%](img/collections.immutable.png)
+
+---
+
+# Lists
+
+List represents an immutable singly linked list. You can create a list by invoking it as a function, passing in its contents in the form of comma-separated parameters
+
+```scala
+
+val numbers = List(32, 95, 24, 21, 17)
+val colors = List("red", "green", "blue")
+
+colors.head
+colors.tail
+
+//invoke the list as a function and pass it the 
+//zero-based index of that element
+colors(1)
+
+```
+
+---
+# Lists
+
+Iteration
+
+```scala
+for (c <- colors) { println(c) }
+
+//foreach() takes a function and invokes it with every item in the list.
+colors.foreach((c: String) => println(c))
+colors.foreach(println(_))
+
+//map() takes a function that converts a single list element to another value and/or type
+val sizes = colors.map((c: String) => c.size)
+val sizes = colors.map(_.size)
+
+//reduce() takes a function that combines two list elements into a single element
+val total = numbers.reduce((a: Int, b: Int) => a + b)
+val total = numbers.reduce(_ + _)
+
+```
+
+---
+# Set
+
+ Set is an immutable and unordered collection of unique elements
+
+```scala
+
+val unique = Set(10, 20, 30, 20, 20, 10)
+
+```
+
+---
+# Map
+
+Immutable key-value store, also known as a hashmap, dictionary, or associative array in other languages
+The key and the value are type-parameterized
+
+```scala
+
+val colorMap = Map("red" -> 0xFF0000, "green" -> 0xFF00, "blue" -> 0xFF)
+
+val redRGB = colorMap("red")
+
+```
+
+---
+
+# Exercise 
+
+Write an recusrive function that traverses the list without using a mutable variable
+
+
+```scala
+
+@annotation.tailrec
+def visit(???): ??? = {
+  ???
+}
+val primes = List(2,1,3)
+visit(primes)
+
+```
+
+---
+
+```scala
+
+@annotation.tailrec
+def visit(i: List[Int]):Unit = {
+  if (i != Nil) {
+    print(i.head + ", ");
+    visit(i.tail)
+  }
+}
+val primes = List(2,1,3)
+visit(primes)
+
+```
+
+---
+# Lists
+
+All lists end with an instance of Nil as their terminus
+
+ - Nil is essentially a singleton instance of List[Nothing]
+ - Nothing type is a noninstantiable subtype of all other Scala types. 
+ - A list of Nothing types is thus compatible with lists of all other types and can be safely used as their terminus.
+
+---
+# The Cons Operator
+
+The right-associative cons operator :: provides an alternative way to  build a list without using the traditional List(...) format
+
+```scala
+
+val numbers = 1 :: 2 :: 3 :: Nil
+val nums = Nil.::(3).::(2).::(1)
+
+ ```
+ :: is simply a method in List. It takes a single value that becomes the head of a new list, its tail pointing to the list on which :: was called.
+
+---
+
+# List Arithmetic
+
+
+
+```scala
+// Prepends another list to this one. 
+// A right-associative operator.
+List(1, 2) ::: List(2, 3)
+
+
+//Appends another collection to this list.
+List(1, 2) ++ Set(3, 4, 3)
+
+
+// Returns true if the collection types and contents are equal.
+List(1, 2) == List(1, 2)
+
+
+//Returns a version of the list without duplicate elements.
+List(3, 5, 4, 3, 4).distinct
+
+//Subtracts the first n elements from the list. 
+List('a', 'b', 'c', 'd') drop 2
+
+```
+
+---
+
+
+
+![inline, 105%](img/list.png)
+
+
+
+---
+# List Arithmetic
+
+
+
+```scala
+//Returns elements from the list that pass a true/false function.
+List(23, 8, 14, 21) filter (_ > 18)
+
+
+//Converts a list of lists into a single list of elements.
+List(List(1, 2), List(3, 4)).flatten
+
+
+//Groups elements into a tuple of two lists based on the result of a true/false function.
+List(1, 2, 3, 4, 5) partition (_ < 3)
+
+//Reverses the list
+List(1, 2, 3).reverse
+
+// Returns a segment of the list from the first index up to but not including the second index.
+List(2, 3, 5, 7) slice (1, 3)
+
+// Orders the list by the value returned from the given function.
+List("apple", "to") sortBy (_.size)
+
+```
+
+---
+
+# List Arithmetic
+
+```scala
+
+// Orders a list of core Scala types by their natural value.
+List("apple", "to").sorted
+
+// Groups elements into a tuple of two lists based on if they fall before or after the given index.
+List(2, 3, 5, 7) splitAt 2
+
+// Extracts the first n elements from the list. 
+List(2, 3, 5, 7, 11, 13) take 3
+
+// Combines two lists into a list of tuples of elements at each index.
+List(1, 2) zip List("a", "b")
+
+```
+
+---
+
+# Mapping Lists
+
+ Mapping methods take a function and apply it to every member of a list, collecting the results into a new list
+
+```scala
+
+ // collect
+ // Transforms each element using a partial function, retaining applicable elements
+ List(0, 1, 0) collect {case 1 => "ok"}
+
+val list = List(1,2,3)
+def maybe(x:Int) = if (x >= 2) List(x-1, x, x+1)  else Nil
+
+// map
+// Transforms each element using the given function.
+list.map(x => maybe(x))
+list.map(maybe(_))
+
+// flatMap
+// Transforms each element using the given function and “flattens” the list of results into this list.
+list.flatMap(x => maybe(x))
+list.flatMap(maybe(_))
+```
+
+---
+
+# Reducing Lists
+
+Scala’s collections supports 
+
+- mathematical reduction operations (e.g., finding the sum of a list) 
+- boolean reduction operations (e.g., determining if a list contains a given element)
+- generic higher-order operations  / folds  to create any other type of list reduction algorithm
+
+---
+
+# Reducing Lists
+
+```scala
+
+val list = List(1,2,3)
+
+//Math reduction operations
+list.max
+list.min
+list.product
+list.sum
+
+```
+
+---
+
+
+# Reducing Lists
+
+__Boolean reduction operations__
+
+```scala
+
+val list = List(1,2,3)
+
+list contains 29
+
+// Checks if the list ends with a given list
+list endsWith List(4, 3)  
+
+//Tests whether the list starts with a given list
+list startsWith List(0)
+
+//Checks if a predicate holds true for at least one element in the list
+list exists (_ < 2)  
+
+//Checks if a predicate holds true for every element in the list
+list forall (_ < 18)
+```
+
+---
+
+# List-folding operations
+
+Scala supports list folding operations using  higher-order functions to reduce the list
+
+```scala
+
+val list = List(1,2,3)
+
+//fold
+//Reduces the list given a starting value and a reduction function
+list.fold(0)(_ + _)
+
+//Reduces the list from left to right given a starting value and a reduction function
+list.foldLeft(0)(_ + _)
+
+//Reduces the list from right to left given a starting value and a reduction function
+list.foldRight(0)(_ + _)
+```
+
+---
+
+# List-folding operations
+
+```scala
+
+val list = List(1,2,3)
+
+//Reduces the list given a reduction function, starting with 
+//the first element in the list
+list.reduce(_ + _)
+
+//Reduces the list from left to right given a reduction function, 
+//starting with the first element in the list
+list.reduceLeft(_ + _)
+
+//Reduces the list from right to left given a reduction function, 
+//starting with the first element in the list
+list.reduceRight(_ + _)
+
+
+```
+
+---
+
+# List-folding operations
+
+```scala
+
+val list = List(1,2,3)
+
+
+//Takes a starting value and a reduction function and returns 
+//a list of each accumulated value
+list.scan(0)(_ + _)
+
+//Takes a starting value and a reduction function and returns 
+//a list of each accumulated value from left to right
+list.scanLeft(0)(_ + _)
+
+//Takes a starting value and a reduction function and returns 
+//a list of each accumulated value from right to left
+list.scanRight(0)(_ + _)
+
+
+```
+
+---
+
+# Pattern Matching with Collections
+
+```scala
+
+val statuses = List(500, 404)
+
+val msg = statuses match {
+  case x if x contains(500) => "has error"
+  case _ => "okay"
+}
+
+
+```
+
+---
+
+# Pattern Matching with Collections
+
+```scala
+
+val list = List(1,2,3)
+val status = List("ok", 200, true)
+
+val code = status match {
+  case List(_, _, false) => 500
+  case List("error", _, _) => 302
+  case List("ok", x, true) => x
+  case _ => "-"
+}
+
+
+```
+
+---
+
+# Exercises
+
+---
+
+Q 1.) Write an implementation for sum
+
+```scala
+
+def sum(xs: List[Int]): Int = {
+  ???    
+}
+
+```
+
+---
+
+Q 1.) Write an implementation for sum
+
+```scala
+
+def sum(xs: List[Int]): Int = {
+  def loop(acum: Int, rest: List[Int]): Int =
+    if (rest.isEmpty) acum else loop(acum + rest.head, rest.tail)
+  loop(0, xs)
+}
+```
+
+---
+
+Q 2.) Write an implementation for  max
+
+```scala
+def max(xs: List[Int]): Int = {
+ ???
+}
+```
+
+---
+
+Q 2.) Write an implementation for  max
+
+```scala
+
+def max(xs: List[Int]): Int = {
+  def compare(a: Int, b: Int): Int = {
+    if (a < b) b else a
+  }
+
+  def loop(result: Int, rest: List[Int]): Int = {
+    if (rest.isEmpty) result
+    else loop(compare(result, rest.head), rest.tail)
+  }
+
+  if (xs.isEmpty) throw new NoSuchElementException
+  else loop(xs.head, xs.tail)
+}
+
+```
+
+---
+
+Q 2.) Write an implementation for  max
+
+```scala
+
+def max(xs: List[Int]): Int = {
+  def compare(a: Int, b: Int): Int = {
+    if (a < b) b else a
+  }
+
+  def loop(result: Int, rest: List[Int]): Int = {
+    if (rest.isEmpty) result
+    else loop(compare(result, rest.head), rest.tail)
+  }
+
+  if (xs.isEmpty) throw new NoSuchElementException
+  else loop(xs.head, xs.tail)
+}
+
+```
+
+---
+
+Q 2.) Write an implementation for  max
+
+```scala
+
+def compute(f :(Int, Int) => Int)(xs: List[Int]): Int = {
+  def loop(result: Int, rest: List[Int]): Int = {
+    if (rest.isEmpty) result
+    else loop(f(result, rest.head), rest.tail)
+  }
+  if (xs.isEmpty) throw new NoSuchElementException
+  else loop(xs.head, xs.tail)
+}
+
+compute((a,b) => if (a < b) b else a)(List(1,2,3,4))
+
+
+```
+
+---
+
+Q 3.) Write an implementation for contains
+
+```scala
+def contains(x: Int, l: List[Int]): Boolean = {
+  ???
+}
+```
+
+---
+
+
+```scala
+
+def contains(x: Int, l: List[Int]): Boolean = {
+  def loop(status:Boolean, lst: List[Int]): Boolean = {
+    if (lst.isEmpty || status) status
+    else loop((x == lst.head),  lst.tail)
+  }
+  loop(false, l)
+}
+
+```
+
+
+---
+
+head | tail | apply | update | prepend | append | insert
+---|---|---|---|---|---|---|
+Immutable |   |   |   |   |   |   |  
+List | C | C | L | L | C | L | -
+Stream | C | C | L | L | C | L | -
+Vector | eC | eC | eC | eC | eC | eC | -
+Stack | C | C | L | L | C | L | L
+Queue | aC | aC | L | L | C | C | -
+Range | C | C | C | - | - | - | -
+String | C | L | C | L | L | L | -
+Mutable |   |   |   |   |   |   |  
+ArrayBuffer | C | L | C | C | L | aC | L
+ListBuffer | C | L | L | L | C | C | L
+StringBuilder | C | L | C | C | L | aC | L
+MutableList | C | L | L | L | C | C | L
+Queue | C | L | L | L | C | C | L
+ArraySeq | C | L | C | C | - | - | -
+Stack | C | L | L | L | C | L | L
+ArrayStack | C | L | C | C | aC | L | L
+Array | C | L | C | C | - | - | -
+
+
+---
+
+Legend | Explanation
+---|---|
+C | The operation takes (fast) constant time.
+eC | The operation takes effectively constant time, but this might depend on some assumptions such as maximum length of a vector or distribution of hash keys.
+aC | The operation takes amortized constant time. Some invocations of the operation might take longer, but if many operations are performed on average only constant time per operation is taken. Log The operation takes time proportional to the logarithm of the collection size.
+L | The operation is linear, that is it takes time proportional to the collection size.
+- | The operation is not supported.
+
+---
+
+![inline, 470%](img/scala-logo.png)
+
+---
