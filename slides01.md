@@ -3,20 +3,10 @@ autoscale: true
 
 ![inline, 75%](img/logo.png)
 
-#[fit] A Scala Primer For Spark
+#[fit] A Scala Primer For Spark - Part I
 
 ---
 
-# Agenda
-- Why Scala?
-- Getting Started
-- Literals, Values, Variables, and Types
-- Expressions / Control Structures
-- First Class Functions
-- Collections
-- Object-Oriented Scala
-
----
 
 # Why Scala?
 
@@ -1918,5 +1908,3 @@ L | The operation is linear, that is it takes time proportional to the collectio
 ---
 
 ![inline, 470%](img/scala-logo.png)
-
----
